@@ -1,2 +1,2 @@
 # eu-roaming-guard
-Guards your phone from rouming with non EU MNOs.
+Guards your phone from roaming with non EU MNOs.
