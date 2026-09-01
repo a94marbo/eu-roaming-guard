@@ -55,14 +55,20 @@ Powershell
 The compiled APK will be located at:
 app/build/outputs/apk/debug/app-debug.apk
 
+---
+
 ### Method 3: Android Studio
 Open Android Studio and select Open, then select the project directory.
 Let Gradle sync project dependencies.
 Go to Build > Build Bundle(s) / APK(s) > Build APK(s).
 
+---
+
 📲 Installation & Setup
 Transfer and install app-debug.apk on your Android device.
 Open the app and grant the runtime permissions (Phone and Location are required by Android to read cell tower MCC codes).
+
+---
 
 🔑 One-Time Permission Setup (ADB)
 Android restricts third-party apps from toggling system settings like Data Roaming without the WRITE_SECURE_SETTINGS permission. You only need to grant this permission once (it survives device reboots).
@@ -85,7 +91,6 @@ Option B: Wireless ADB from PC (No USB Cable)
 Bash
 adb pair <PHONE_IP>:<PAIRING_PORT>
 # Enter the 6-digit code when prompted
-
 5. Connect to the device:
 Bash
 adb connect <PHONE_IP>:<CONNECT_PORT>
