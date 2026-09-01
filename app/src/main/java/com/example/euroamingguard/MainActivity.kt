@@ -1,4 +1,4 @@
-﻿package com.example.euroamingguard
+package com.example.euroamingguard
 
 import android.Manifest
 import android.app.ActivityManager
@@ -67,12 +67,11 @@ class MainActivity : AppCompatActivity() {
         tvAdbCommand.text = "adb shell pm grant $packageName android.permission.WRITE_SECURE_SETTINGS"
     }
 
-private fun setupListeners() {
+    private fun setupListeners() {
         switchGuard.setOnCheckedChangeListener { _, isChecked ->
             val serviceIntent = Intent(this, RoamingGuardService::class.java)
             if (isChecked) {
                 ContextCompat.startForegroundService(this, serviceIntent)
-                // Utvärdera direkt för att uppdatera UI utan fördröjning
                 val operatorCode = telephonyManager.networkOperator
                 if (operatorCode.length >= 3) {
                     val mcc = operatorCode.substring(0, 3)
@@ -98,18 +97,24 @@ private fun setupListeners() {
 
     private fun updateUI() {
         val isRunning = isServiceRunning(RoamingGuardService::class.java)
+
+        // Förhindra lyssnar-loop vid uppdatering av switchen
+        switchGuard.setOnCheckedChangeListener(null)
         switchGuard.isChecked = isRunning
-        tvGuardSubtitle.text = if (isRunning) "Guard is active & monitoring network" else "Protection is disabled"
+        setupListeners()
+
+        tvGuardSubtitle.text = if (isRunning) "Guard är aktiv & övervakar nätet" else "Skyddet är inaktiverat"
         tvGuardSubtitle.setTextColor(if (isRunning) Color.parseColor("#2E7D32") else Color.GRAY)
 
         val hasSecure = checkSelfPermission(Manifest.permission.WRITE_SECURE_SETTINGS) == PackageManager.PERMISSION_GRANTED
         cardPermissionWarning.visibility = if (hasSecure) View.GONE else View.VISIBLE
 
+        // Läs den faktiska hårdvarustatusen
         val isRoaming = RoamingController.isRoamingEnabled(this)
         tvRoamingState.text = if (isRoaming) "ENABLED" else "DISABLED"
         tvRoamingState.setTextColor(if (isRoaming) Color.parseColor("#2E7D32") else Color.RED)
 
-        val operatorName = telephonyManager.networkOperatorName.ifEmpty { "No Network" }
+        val operatorName = telephonyManager.networkOperatorName.ifEmpty { "Inget nätverk" }
         val operatorCode = telephonyManager.networkOperator
         tvCarrierName.text = operatorName
 
@@ -119,7 +124,7 @@ private fun setupListeners() {
             tvMccZone.text = if (isAllowed) "Allowed Zone (MCC $mcc)" else "Disallowed Zone (MCC $mcc)"
             tvMccZone.setTextColor(if (isAllowed) Color.parseColor("#1565C0") else Color.parseColor("#D84315"))
         } else {
-            tvMccZone.text = "Searching..."
+            tvMccZone.text = "Söker..."
             tvMccZone.setTextColor(Color.GRAY)
         }
     }
