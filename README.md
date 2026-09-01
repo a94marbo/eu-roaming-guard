@@ -58,20 +58,21 @@ app/build/outputs/apk/debug/app-debug.apk
 
 
 ### Method 3: Android Studio
-Open Android Studio and select Open, then select the project directory.
-Let Gradle sync project dependencies.
-Go to Build > Build Bundle(s) / APK(s) > Build APK(s).
+1. Open Android Studio and select Open, then select the project directory.
+2. Let Gradle sync project dependencies.
+3. Go to Build > Build Bundle(s) / APK(s) > Build APK(s).
 
 ---
 
 ## 📲 Installation & Setup
-Transfer and install app-debug.apk on your Android device.
-Open the app and grant the runtime permissions (Phone and Location are required by Android to read cell tower MCC codes).
+1. Transfer and install app-debug.apk on your Android device.
+2. Open the app and grant the runtime permissions (Phone and Location are required by Android to read cell tower MCC codes).
 
 ---
 
 ### 🔑 One-Time Permission Setup (ADB)
 Android restricts third-party apps from toggling system settings like Data Roaming without the WRITE_SECURE_SETTINGS permission. You only need to grant this permission once (it survives device reboots).
+
 Choose one of the methods below to grant permission:
 
 #### Option A: USB Cable (Linux / macOS / Windows Bash)
@@ -129,6 +130,8 @@ To verify that the permission has been granted:
 Bash
 adb shell dumpsys package com.example.euroamingguard | grep WRITE_SECURE_SETTINGS
 Expected output: android.permission.WRITE_SECURE_SETTINGS: granted=true
+
+---
 
 ## 📋 Default Pre-configured MCC List
 Country	MCC	Default State	Country	MCC	Default State
