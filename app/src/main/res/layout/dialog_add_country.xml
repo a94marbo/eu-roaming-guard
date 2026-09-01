@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <EditText
+        android:id="@+id/etDialogCountryName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Country Name (e.g. Switzerland)"
+        android:layout_marginBottom="12dp" />
+
+    <EditText
+        android:id="@+id/etDialogCountryMcc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="3-Digit MCC Code (e.g. 228)"
+        android:inputType="number"
+        android:maxLength="3" />
+</LinearLayout>
