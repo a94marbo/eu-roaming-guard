@@ -81,7 +81,7 @@ Choose one of the methods below to grant permission:
 3. Connect your phone to your computer via USB.
 Run:
 
-Bash
+  ```bash
 adb shell pm grant com.example.euroamingguard android.permission.WRITE_SECURE_SETTINGS
 
 #### Option B: Wireless ADB from PC (No USB Cable)
@@ -93,10 +93,10 @@ Bash
 adb pair <PHONE_IP>:<PAIRING_PORT>
 "# Enter the 6-digit code when prompted"
 5. Connect to the device:
-Bash
+  ```bash
 adb connect <PHONE_IP>:<CONNECT_PORT>
 6. Grant the permission:
-Bash
+  ```bash
 adb shell pm grant com.example.euroamingguard android.permission.WRITE_SECURE_SETTINGS
 
 #### Option C: Directly on Phone without PC (Android 11+)
@@ -106,7 +106,7 @@ Using LADB:
 2. Open Wireless Debugging in Settings > Developer Options in split-screen mode alongside LADB.
 3. Tap "Pair device with pairing code" and enter the port and pairing code into LADB.
 4. Run:
-Bash
+  ```bash
 pm grant com.example.euroamingguard android.permission.WRITE_SECURE_SETTINGS
 
 Using Termux (with android-tools):
@@ -119,7 +119,7 @@ adb shell pm grant com.example.euroamingguard android.permission.WRITE_SECURE_SE
 #### Option D: Rooted Devices
 If your device is rooted with Magisk / KernelSU / APatch, open any terminal emulator on the device and run:
 
-Bash
+  ```bash
 su -c pm grant com.example.euroamingguard android.permission.WRITE_SECURE_SETTINGS
 
 ---
@@ -127,7 +127,7 @@ su -c pm grant com.example.euroamingguard android.permission.WRITE_SECURE_SETTIN
 ##🚦 Verification
 To verify that the permission has been granted:
 
-Bash
+  ```bash
 adb shell dumpsys package com.example.euroamingguard | grep WRITE_SECURE_SETTINGS
 Expected output: android.permission.WRITE_SECURE_SETTINGS: granted=true
 
