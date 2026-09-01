@@ -37,7 +37,6 @@ This repository includes a pre-configured GitHub Actions workflow (`.github/work
 3. Click the latest workflow run and download the **`EURoamingGuard-APK`** artifact.
 
 
-
 ### Method 2: Command Line (Gradle)
 
 **Prerequisites:** JDK 17+ and Android SDK installed.
@@ -47,9 +46,7 @@ This repository includes a pre-configured GitHub Actions workflow (`.github/work
   chmod +x gradlew
   ./gradlew assembleDebug
   
-Windows (PowerShell / Command Prompt):
-
-- ** Powershell: **
+- **Windows (PowerShell / Command Prompt):**
   ```bash
 . \gradlew.bat assembleDebug
   
