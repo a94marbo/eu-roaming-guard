@@ -1,101 +1,51 @@
-﻿package com.example.euroamingguard
+package com.example.euroamingguard
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.Service
 import android.content.Context
-import android.content.Intent
-import android.os.Build
-import android.os.IBinder
-import android.telephony.ServiceState
-import android.telephony.TelephonyCallback
-import android.telephony.TelephonyManager
-import androidx.core.app.NotificationCompat
+import android.provider.Settings
+import android.telephony.SubscriptionManager
+import android.util.Log
 
-class RoamingGuardService : Service() {
+object RoamingController {
+    private const val TAG = "RoamingController"
 
-    private lateinit var telephonyManager: TelephonyManager
-    private var telephonyCallback: Any? = null
+    fun setRoamingEnabled(context: Context, enable: Boolean): Boolean {
+        val targetValue = if (enable) 1 else 0
+        return try {
+            val cr = context.contentResolver
 
-    companion object {
-        private const val CHANNEL_ID = "roaming_guard_channel"
-        private const val NOTIF_ID = 1001
-    }
+            // 1. Sätt den globala inställningen
+            Settings.Global.putInt(cr, Settings.Global.DATA_ROAMING, targetValue)
 
-    override fun onCreate() {
-        super.onCreate()
-        createNotificationChannel()
-        startForeground(NOTIF_ID, createNotification("Monitoring network status..."))
-
-        telephonyManager = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-        registerNetworkListener()
-    }
-
-    private fun registerNetworkListener() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val callback = object : TelephonyCallback(), TelephonyCallback.ServiceStateListener {
-                override fun onServiceStateChanged(serviceState: ServiceState) {
-                    evaluateNetwork()
+            // 2. Sätt SIM-specifik roaming (krävs för Android 10+ och Dual-SIM/eSIM)
+            try {
+                val subId = SubscriptionManager.getDefaultDataSubscriptionId()
+                if (subId != SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
+                    Settings.Global.putInt(cr, "data_roaming$subId", targetValue)
                 }
+                Settings.Global.putInt(cr, "data_roaming1", targetValue)
+                Settings.Global.putInt(cr, "data_roaming2", targetValue)
+            } catch (e: Exception) {
+                Log.w(TAG, "Kunde inte sätta per-SIM roaming: ${e.message}")
             }
-            telephonyManager.registerTelephonyCallback(mainExecutor, callback)
-            telephonyCallback = callback
-        } else {
-            @Suppress("DEPRECATION")
-            val listener = object : android.telephony.PhoneStateListener() {
-                @Deprecated("Deprecated in Java")
-                override fun onServiceStateChanged(serviceState: ServiceState?) {
-                    evaluateNetwork()
-                }
+
+            Log.i(TAG, "Data roaming har satts till: $enable")
+            true
+        } catch (e: SecurityException) {
+            Log.e(TAG, "Saknar WRITE_SECURE_SETTINGS: ${e.message}")
+            false
+        }
+    }
+
+    fun isRoamingEnabled(context: Context): Boolean {
+        return try {
+            val subId = SubscriptionManager.getDefaultDataSubscriptionId()
+            if (subId != SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
+                val subRoaming = Settings.Global.getInt(context.contentResolver, "data_roaming$subId", -1)
+                if (subRoaming != -1) return subRoaming == 1
             }
-            @Suppress("DEPRECATION")
-            telephonyManager.listen(listener, android.telephony.PhoneStateListener.LISTEN_SERVICE_STATE)
-            telephonyCallback = listener
+            Settings.Global.getInt(context.contentResolver, Settings.Global.DATA_ROAMING, 0) == 1
+        } catch (e: Exception) {
+            false
         }
     }
-
-    private fun evaluateNetwork() {
-        val networkOperator = telephonyManager.networkOperator
-        if (networkOperator.isNullOrEmpty() || networkOperator.length < 3) return
-
-        val mcc = networkOperator.substring(0, 3)
-        val isAllowed = CountryManager.isMccAllowed(this, mcc)
-
-        if (isAllowed) {
-            RoamingController.setRoamingEnabled(this, true)
-            updateNotification("Connected to allowed network (MCC $mcc). Roaming ENABLED.")
-        } else {
-            RoamingController.setRoamingEnabled(this, false)
-            updateNotification("Non-whitelisted network (MCC $mcc). Roaming DISABLED.")
-        }
-    }
-
-    private fun createNotificationChannel() {
-        val channel = NotificationChannel(CHANNEL_ID, "EU Roaming Guard Status", NotificationManager.IMPORTANCE_LOW)
-        getSystemService(NotificationManager::class.java)?.createNotificationChannel(channel)
-    }
-
-    private fun createNotification(contentText: String): Notification {
-        return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("EU Roaming Guard")
-            .setContentText(contentText)
-            .setSmallIcon(android.R.drawable.stat_sys_warning)
-            .setOngoing(true)
-            .build()
-    }
-
-    private fun updateNotification(contentText: String) {
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        manager.notify(NOTIF_ID, createNotification(contentText))
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && telephonyCallback is TelephonyCallback) {
-            telephonyManager.unregisterTelephonyCallback(telephonyCallback as TelephonyCallback)
-        }
-    }
-
-    override fun onBind(intent: Intent?): IBinder? = null
 }
