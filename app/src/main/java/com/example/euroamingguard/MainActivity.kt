@@ -67,13 +67,20 @@ class MainActivity : AppCompatActivity() {
         tvAdbCommand.text = "adb shell pm grant $packageName android.permission.WRITE_SECURE_SETTINGS"
     }
 
-    private fun setupListeners() {
+private fun setupListeners() {
         switchGuard.setOnCheckedChangeListener { _, isChecked ->
-            val isRunning = isServiceRunning(RoamingGuardService::class.java)
-            if (isChecked && !isRunning) {
-                ContextCompat.startForegroundService(this, Intent(this, RoamingGuardService::class.java))
-            } else if (!isChecked && isRunning) {
-                stopService(Intent(this, RoamingGuardService::class.java))
+            val serviceIntent = Intent(this, RoamingGuardService::class.java)
+            if (isChecked) {
+                ContextCompat.startForegroundService(this, serviceIntent)
+                // Utvärdera direkt för att uppdatera UI utan fördröjning
+                val operatorCode = telephonyManager.networkOperator
+                if (operatorCode.length >= 3) {
+                    val mcc = operatorCode.substring(0, 3)
+                    val isAllowed = CountryManager.isMccAllowed(this, mcc)
+                    RoamingController.setRoamingEnabled(this, isAllowed)
+                }
+            } else {
+                stopService(serviceIntent)
             }
             updateUI()
         }
@@ -81,7 +88,7 @@ class MainActivity : AppCompatActivity() {
         btnCopyAdb.setOnClickListener {
             val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             clipboard.setPrimaryClip(ClipData.newPlainText("ADB Command", tvAdbCommand.text))
-            Toast.makeText(this, "ADB command copied to clipboard", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "ADB-kommando kopierat", Toast.LENGTH_SHORT).show()
         }
 
         btnManageCountries.setOnClickListener {
