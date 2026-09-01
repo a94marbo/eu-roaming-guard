@@ -13,10 +13,10 @@ object RoamingController {
         return try {
             val cr = context.contentResolver
 
-            // 1. Sätt den globala inställningen
+            // 1. Global inställning
             Settings.Global.putInt(cr, Settings.Global.DATA_ROAMING, targetValue)
 
-            // 2. Sätt SIM-specifik roaming (krävs för Android 10+ och Dual-SIM/eSIM)
+            // 2. SIM-specifik inställning (för moderna mobiler / Dual-SIM)
             try {
                 val subId = SubscriptionManager.getDefaultDataSubscriptionId()
                 if (subId != SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
@@ -28,7 +28,7 @@ object RoamingController {
                 Log.w(TAG, "Kunde inte sätta per-SIM roaming: ${e.message}")
             }
 
-            Log.i(TAG, "Data roaming har satts till: $enable")
+            Log.i(TAG, "Data roaming satts till: $enable")
             true
         } catch (e: SecurityException) {
             Log.e(TAG, "Saknar WRITE_SECURE_SETTINGS: ${e.message}")
@@ -48,5 +48,4 @@ object RoamingController {
             false
         }
     }
-} }
 }
