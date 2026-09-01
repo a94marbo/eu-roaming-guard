@@ -1,3 +1,5 @@
+# NOT WORKING YET
+
 # 🛡️ EU Roaming Guard
 
 An automated Android utility designed to prevent unexpected "bill shock" by instantly managing Mobile Data Roaming based on the connected Mobile Network Operator's country code (MCC).
