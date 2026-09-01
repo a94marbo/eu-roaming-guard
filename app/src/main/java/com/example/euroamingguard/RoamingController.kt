@@ -1,48 +1,68 @@
 package com.example.euroamingguard
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.provider.Settings
 import android.telephony.SubscriptionManager
+import android.telephony.TelephonyManager
 import android.util.Log
 
 object RoamingController {
     private const val TAG = "RoamingController"
 
+    @SuppressLint("MissingPermission")
     fun setRoamingEnabled(context: Context, enable: Boolean): Boolean {
         val targetValue = if (enable) 1 else 0
+        val cr = context.contentResolver
+
         return try {
-            val cr = context.contentResolver
-
-            // 1. Global inställning
+            // 1. Sätt global fallback
             Settings.Global.putInt(cr, Settings.Global.DATA_ROAMING, targetValue)
+            Settings.Global.putInt(cr, "data_roaming", targetValue)
 
-            // 2. SIM-specifik inställning (för moderna mobiler / Dual-SIM)
+            // 2. Sätt fasta SIM-platser (vanligt på Samsung / Dual-SIM)
+            Settings.Global.putInt(cr, "data_roaming0", targetValue)
+            Settings.Global.putInt(cr, "data_roaming1", targetValue)
+            Settings.Global.putInt(cr, "data_roaming2", targetValue)
+            Settings.Global.putInt(cr, "data_roaming_0", targetValue)
+            Settings.Global.putInt(cr, "data_roaming_1", targetValue)
+            Settings.Global.putInt(cr, "data_roaming_2", targetValue)
+
+            // 3. Hämta alla aktiva SIM-kort och sätt deras specifika ID:n
             try {
-                val subId = SubscriptionManager.getDefaultDataSubscriptionId()
-                if (subId != SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
-                    Settings.Global.putInt(cr, "data_roaming$subId", targetValue)
+                val subManager = context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as? SubscriptionManager
+                val activeList = subManager?.activeSubscriptionInfoList
+                if (activeList != null) {
+                    for (sub in activeList) {
+                        val subId = sub.subscriptionId
+                        Settings.Global.putInt(cr, "data_roaming$subId", targetValue)
+                        Settings.Global.putInt(cr, "data_roaming_$subId", targetValue)
+                        Settings.Global.putInt(cr, "data_roaming_sub$subId", targetValue)
+                    }
                 }
-                Settings.Global.putInt(cr, "data_roaming1", targetValue)
-                Settings.Global.putInt(cr, "data_roaming2", targetValue)
             } catch (e: Exception) {
-                Log.w(TAG, "Kunde inte sätta per-SIM roaming: ${e.message}")
+                Log.w(TAG, "Kunde inte iterera över SubscriptionManager: ${e.message}")
             }
 
-            Log.i(TAG, "Data roaming satts till: $enable")
+            Log.i(TAG, "Data roaming satts till: $enable ($targetValue)")
             true
         } catch (e: SecurityException) {
-            Log.e(TAG, "Saknar WRITE_SECURE_SETTINGS: ${e.message}")
+            Log.e(TAG, "Saknar behörighet WRITE_SECURE_SETTINGS: ${e.message}")
             false
         }
     }
 
     fun isRoamingEnabled(context: Context): Boolean {
         return try {
-            val subId = SubscriptionManager.getDefaultDataSubscriptionId()
-            if (subId != SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
-                val subRoaming = Settings.Global.getInt(context.contentResolver, "data_roaming$subId", -1)
-                if (subRoaming != -1) return subRoaming == 1
+            val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+
+            // På Android 10+ (API 29+): Använd Androids officiella systemkontroll
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                return telephonyManager.isDataRoamingEnabled
             }
+
+            // Äldre versioner: Läs från Settings.Global
             Settings.Global.getInt(context.contentResolver, Settings.Global.DATA_ROAMING, 0) == 1
         } catch (e: Exception) {
             false
