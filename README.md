@@ -64,17 +64,17 @@ Go to Build > Build Bundle(s) / APK(s) > Build APK(s).
 
 ---
 
-📲 Installation & Setup
+## 📲 Installation & Setup
 Transfer and install app-debug.apk on your Android device.
 Open the app and grant the runtime permissions (Phone and Location are required by Android to read cell tower MCC codes).
 
 ---
 
-🔑 One-Time Permission Setup (ADB)
+### 🔑 One-Time Permission Setup (ADB)
 Android restricts third-party apps from toggling system settings like Data Roaming without the WRITE_SECURE_SETTINGS permission. You only need to grant this permission once (it survives device reboots).
 Choose one of the methods below to grant permission:
 
-Option A: USB Cable (Linux / macOS / Windows Bash)
+#### Option A: USB Cable (Linux / macOS / Windows Bash)
 1. Enable Developer Options (Settings > About Phone > tap "Build Number" 7 times).
 2. Enable USB Debugging inside Developer Options.
 3. Connect your phone to your computer via USB.
@@ -83,23 +83,22 @@ Run:
 Bash
 adb shell pm grant com.example.euroamingguard android.permission.WRITE_SECURE_SETTINGS
 
-Option B: Wireless ADB from PC (No USB Cable)
+#### Option B: Wireless ADB from PC (No USB Cable)
 1. Connect your phone and computer to the same Wi-Fi network.
 2. On your phone, go to Developer Options > Wireless Debugging and turn it ON.
 3. Tap "Pair device with pairing code" to view your IP, port, and 6-digit code.
 4. On your PC terminal, pair the device:
 Bash
 adb pair <PHONE_IP>:<PAIRING_PORT>
-# Enter the 6-digit code when prompted
+"# Enter the 6-digit code when prompted"
 5. Connect to the device:
 Bash
 adb connect <PHONE_IP>:<CONNECT_PORT>
 6. Grant the permission:
-
 Bash
 adb shell pm grant com.example.euroamingguard android.permission.WRITE_SECURE_SETTINGS
 
-Option C: Directly on Phone without PC (Android 11+)
+#### Option C: Directly on Phone without PC (Android 11+)
 You can grant the permission entirely on your device using local shell apps like Termux or LADB:
 Using LADB:
 1. Install LADB from Google Play or GitHub.
@@ -116,21 +115,24 @@ adb pair localhost:<PAIRING_PORT>
 adb connect localhost:<CONNECT_PORT>
 adb shell pm grant com.example.euroamingguard android.permission.WRITE_SECURE_SETTINGS
 
-Option D: Rooted Devices
+#### Option D: Rooted Devices
 If your device is rooted with Magisk / KernelSU / APatch, open any terminal emulator on the device and run:
 
 Bash
 su -c pm grant com.example.euroamingguard android.permission.WRITE_SECURE_SETTINGS
 
-🚦 Verification
+---
+
+##🚦 Verification
 To verify that the permission has been granted:
 
 Bash
 adb shell dumpsys package com.example.euroamingguard | grep WRITE_SECURE_SETTINGS
 Expected output: android.permission.WRITE_SECURE_SETTINGS: granted=true
 
-📋 Default Pre-configured MCC List
+## 📋 Default Pre-configured MCC List
 Country	MCC	Default State	Country	MCC	Default State
+
 🇦🇹 Austria	232	✅ Allowed	🇮🇹 Italy	222	✅ Allowed
 🇧🇪 Belgium	206	✅ Allowed	🇱🇻 Latvia	247	✅ Allowed
 🇧🇬 Bulgaria	284	✅ Allowed	🇱🇮 Liechtenstein (EEA)	295	✅ Allowed
@@ -148,5 +150,6 @@ Country	MCC	Default State	Country	MCC	Default State
 🇮🇪 Ireland	272	✅ Allowed	🇸🇪 Sweden	240	✅ Allowed
 🇨🇭 Switzerland	228	❌ Blocked	🇬🇧 United Kingdom	234 / 235	❌ Blocked
 🇦🇩 Andorra	213	❌ Blocked	🇲🇨 Monaco	212	❌ Blocked
-📄 License
+
+##  License
 This project is open source and available under the MIT License.
