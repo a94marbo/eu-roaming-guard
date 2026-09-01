@@ -126,7 +126,7 @@ If your device is rooted with Magisk / KernelSU / APatch, open any terminal emul
 
 ---
 
-##🚦 Verification
+##  Verification
 To verify that the permission has been granted:
 - **Run:**
   ```bash
