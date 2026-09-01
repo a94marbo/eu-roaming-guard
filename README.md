@@ -94,8 +94,9 @@ Choose one of the methods below to grant permission:
 - **Run:**
   ```bash
   adb connect <PHONE_IP>:<CONNECT_PORT>
+  
 6. Grant the permission:
-7. - **Run:**
+- **Run:**
   ```bash
   adb shell pm grant com.example.euroamingguard android.permission.WRITE_SECURE_SETTINGS
 
