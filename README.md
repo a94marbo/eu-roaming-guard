@@ -50,7 +50,8 @@ This repository includes a pre-configured GitHub Actions workflow (`.github/work
 Windows (PowerShell / Command Prompt):
 
 Powershell
-.\gradlew.bat assembleDebug
+  ```bash
+. \gradlew.bat assembleDebug
 
 The compiled APK will be located at:
 app/build/outputs/apk/debug/app-debug.apk
