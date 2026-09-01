@@ -36,7 +36,7 @@ This repository includes a pre-configured GitHub Actions workflow (`.github/work
 2. Go to the **Actions** tab on your GitHub repository.
 3. Click the latest workflow run and download the **`EURoamingGuard-APK`** artifact.
 
----
+
 
 ### Method 2: Command Line (Gradle)
 
@@ -55,7 +55,7 @@ Powershell
 The compiled APK will be located at:
 app/build/outputs/apk/debug/app-debug.apk
 
----
+
 
 ### Method 3: Android Studio
 Open Android Studio and select Open, then select the project directory.
