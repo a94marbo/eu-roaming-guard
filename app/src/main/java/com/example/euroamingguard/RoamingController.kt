@@ -2,50 +2,84 @@ package com.example.euroamingguard
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Build
 import android.provider.Settings
+import android.telephony.SubscriptionInfo
 import android.telephony.SubscriptionManager
-import android.telephony.TelephonyManager
 import android.util.Log
 
 object RoamingController {
     private const val TAG = "RoamingController"
 
+    /**
+     * Sätter dataroaming till ON/OFF på alla kända tillverkares interna systemnycklar.
+     */
     @SuppressLint("MissingPermission")
     fun setRoamingEnabled(context: Context, enable: Boolean): Boolean {
         val targetValue = if (enable) 1 else 0
         val cr = context.contentResolver
 
         return try {
-            // 1. Sätt global fallback
-            Settings.Global.putInt(cr, Settings.Global.DATA_ROAMING, targetValue)
-            Settings.Global.putInt(cr, "data_roaming", targetValue)
+            val keysToWrite = mutableSetOf<String>()
 
-            // 2. Sätt fasta SIM-platser (vanligt på Samsung / Dual-SIM)
-            Settings.Global.putInt(cr, "data_roaming0", targetValue)
-            Settings.Global.putInt(cr, "data_roaming1", targetValue)
-            Settings.Global.putInt(cr, "data_roaming2", targetValue)
-            Settings.Global.putInt(cr, "data_roaming_0", targetValue)
-            Settings.Global.putInt(cr, "data_roaming_1", targetValue)
-            Settings.Global.putInt(cr, "data_roaming_2", targetValue)
+            // 1. Standard Android / Google Pixel / Motorola / Sony
+            keysToWrite.add(Settings.Global.DATA_ROAMING)
+            keysToWrite.add("data_roaming")
+            keysToWrite.add("data_roaming_mode")
 
-            // 3. Hämta alla aktiva SIM-kort och sätt deras specifika ID:n
+            // 2. Samsung One UI (Slot- & Index-baserade nycklar)
+            keysToWrite.add("data_roaming0")
+            keysToWrite.add("data_roaming1")
+            keysToWrite.add("data_roaming2")
+            keysToWrite.add("data_roaming_0")
+            keysToWrite.add("data_roaming_1")
+            keysToWrite.add("data_roaming_2")
+
+            // 3. Xiaomi / Redmi / POCO (HyperOS / MIUI)
+            keysToWrite.add("data_roaming_slot0")
+            keysToWrite.add("data_roaming_slot1")
+            keysToWrite.add("data_roaming_slot2")
+
+            // 4. OnePlus / OPPO / Realme (ColorOS / OxygenOS)
+            keysToWrite.add("oppo_data_roaming")
+            keysToWrite.add("coloros_data_roaming")
+            keysToWrite.add("data_roaming_sub1")
+            keysToWrite.add("data_roaming_sub2")
+
+            // 5. Huawei / Honor (EMUI / MagicOS)
+            keysToWrite.add("hw_data_roaming")
+            keysToWrite.add("hw_data_roaming_sim1")
+            keysToWrite.add("hw_data_roaming_sim2")
+
+            // 6. Dynamisk identifiering av aktiva SIM-kort (Fysiska SIM & eSIM)
             try {
                 val subManager = context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as? SubscriptionManager
-                val activeList = subManager?.activeSubscriptionInfoList
-                if (activeList != null) {
-                    for (sub in activeList) {
+                val activeSubscriptions: List<SubscriptionInfo>? = subManager?.activeSubscriptionInfoList
+                if (activeSubscriptions != null) {
+                    for (sub in activeSubscriptions) {
                         val subId = sub.subscriptionId
-                        Settings.Global.putInt(cr, "data_roaming$subId", targetValue)
-                        Settings.Global.putInt(cr, "data_roaming_$subId", targetValue)
-                        Settings.Global.putInt(cr, "data_roaming_sub$subId", targetValue)
+                        val slotIndex = sub.simSlotIndex
+
+                        keysToWrite.add("data_roaming$subId")
+                        keysToWrite.add("data_roaming_$subId")
+                        keysToWrite.add("data_roaming_sub$subId")
+                        keysToWrite.add("data_roaming_subid$subId")
+                        keysToWrite.add("data_roaming_slot$slotIndex")
                     }
                 }
             } catch (e: Exception) {
-                Log.w(TAG, "Kunde inte iterera över SubscriptionManager: ${e.message}")
+                Log.w(TAG, "Kunde inte hämta aktiva SIM-kort: ${e.message}")
             }
 
-            Log.i(TAG, "Data roaming satts till: $enable ($targetValue)")
+            // Skriv targetValue (0 eller 1) till samtliga nycklar
+            for (key in keysToWrite) {
+                try {
+                    Settings.Global.putInt(cr, key, targetValue)
+                } catch (_: Exception) {
+                    // Ignorera nycklar som inte stöds av just denna enhet
+                }
+            }
+
+            Log.i(TAG, "Universell roaming-inställning uppdaterad till: $enable ($targetValue)")
             true
         } catch (e: SecurityException) {
             Log.e(TAG, "Saknar behörighet WRITE_SECURE_SETTINGS: ${e.message}")
@@ -53,19 +87,69 @@ object RoamingController {
         }
     }
 
+    /**
+     * Läser av den faktiska roaming-statusen oavsett telefontillverkare.
+     */
+    @SuppressLint("MissingPermission")
     fun isRoamingEnabled(context: Context): Boolean {
-        return try {
-            val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        val cr = context.contentResolver
 
-            // På Android 10+ (API 29+): Använd Androids officiella systemkontroll
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                return telephonyManager.isDataRoamingEnabled
+        try {
+            val subManager = context.getSystemService(Context.TELEPHONY_SUBSCRIPTION_SERVICE) as? SubscriptionManager
+            val defaultDataSubId = SubscriptionManager.getDefaultDataSubscriptionId()
+
+            // 1. Kontrollera aktivt data-SIM först om tillgängligt
+            if (defaultDataSubId != SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
+                val activeKeys = listOf(
+                    "data_roaming$defaultDataSubId",
+                    "data_roaming_$defaultDataSubId",
+                    "data_roaming_sub$defaultDataSubId"
+                )
+                for (key in activeKeys) {
+                    val value = Settings.Global.getInt(cr, key, -1)
+                    if (value != -1) return value == 1
+                }
             }
 
-            // Äldre versioner: Läs från Settings.Global
-            Settings.Global.getInt(context.contentResolver, Settings.Global.DATA_ROAMING, 0) == 1
+            // 2. Kontrollera alla aktiva SIM-kort och platser
+            val activeList = subManager?.activeSubscriptionInfoList
+            if (activeList != null) {
+                for (sub in activeList) {
+                    val subId = sub.subscriptionId
+                    val slotIndex = sub.simSlotIndex
+                    val simKeys = listOf(
+                        "data_roaming$subId",
+                        "data_roaming1",
+                        "data_roaming2",
+                        "data_roaming_slot$slotIndex",
+                        "data_roaming_$slotIndex"
+                    )
+                    for (k in simKeys) {
+                        val v = Settings.Global.getInt(cr, k, -1)
+                        if (v != -1) return v == 1
+                    }
+                }
+            }
+
+            // 3. Kontrollera vanliga tillverkar-specifika nycklar
+            val fallbackKeys = listOf(
+                "data_roaming1",
+                "data_roaming0",
+                "data_roaming2",
+                "data_roaming_0",
+                "data_roaming_1",
+                "oppo_data_roaming",
+                "hw_data_roaming"
+            )
+            for (key in fallbackKeys) {
+                val value = Settings.Global.getInt(cr, key, -1)
+                if (value != -1) return value == 1
+            }
+
+            // 4. Global fallback (Pixel, AOSP, Motorola)
+            return Settings.Global.getInt(cr, Settings.Global.DATA_ROAMING, 0) == 1
         } catch (e: Exception) {
-            false
+            return false
         }
     }
 }
