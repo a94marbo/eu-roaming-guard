@@ -46,77 +46,84 @@ This repository includes a pre-configured GitHub Actions workflow (`.github/work
   ```bash
   chmod +x gradlew
   ./gradlew assembleDebug
+  
 Windows (PowerShell / Command Prompt):
-code
+
 Powershell
 .\gradlew.bat assembleDebug
+
 The compiled APK will be located at:
-code
-Text
 app/build/outputs/apk/debug/app-debug.apk
-Method 3: Android Studio
+
+### Method 3: Android Studio
 Open Android Studio and select Open, then select the project directory.
 Let Gradle sync project dependencies.
 Go to Build > Build Bundle(s) / APK(s) > Build APK(s).
+
 📲 Installation & Setup
 Transfer and install app-debug.apk on your Android device.
 Open the app and grant the runtime permissions (Phone and Location are required by Android to read cell tower MCC codes).
+
 🔑 One-Time Permission Setup (ADB)
 Android restricts third-party apps from toggling system settings like Data Roaming without the WRITE_SECURE_SETTINGS permission. You only need to grant this permission once (it survives device reboots).
 Choose one of the methods below to grant permission:
+
 Option A: USB Cable (Linux / macOS / Windows Bash)
-Enable Developer Options (Settings > About Phone > tap "Build Number" 7 times).
-Enable USB Debugging inside Developer Options.
-Connect your phone to your computer via USB.
+1. Enable Developer Options (Settings > About Phone > tap "Build Number" 7 times).
+2. Enable USB Debugging inside Developer Options.
+3. Connect your phone to your computer via USB.
 Run:
-code
+
 Bash
 adb shell pm grant com.example.euroamingguard android.permission.WRITE_SECURE_SETTINGS
+
 Option B: Wireless ADB from PC (No USB Cable)
-Connect your phone and computer to the same Wi-Fi network.
-On your phone, go to Developer Options > Wireless Debugging and turn it ON.
-Tap "Pair device with pairing code" to view your IP, port, and 6-digit code.
-On your PC terminal, pair the device:
-code
+1. Connect your phone and computer to the same Wi-Fi network.
+2. On your phone, go to Developer Options > Wireless Debugging and turn it ON.
+3. Tap "Pair device with pairing code" to view your IP, port, and 6-digit code.
+4. On your PC terminal, pair the device:
 Bash
 adb pair <PHONE_IP>:<PAIRING_PORT>
 # Enter the 6-digit code when prompted
-Connect to the device:
-code
+
+5. Connect to the device:
 Bash
 adb connect <PHONE_IP>:<CONNECT_PORT>
-Grant the permission:
-code
+6. Grant the permission:
+
 Bash
 adb shell pm grant com.example.euroamingguard android.permission.WRITE_SECURE_SETTINGS
+
 Option C: Directly on Phone without PC (Android 11+)
 You can grant the permission entirely on your device using local shell apps like Termux or LADB:
 Using LADB:
-Install LADB from Google Play or GitHub.
-Open Wireless Debugging in Settings > Developer Options in split-screen mode alongside LADB.
-Tap "Pair device with pairing code" and enter the port and pairing code into LADB.
-Run:
-code
+1. Install LADB from Google Play or GitHub.
+2. Open Wireless Debugging in Settings > Developer Options in split-screen mode alongside LADB.
+3. Tap "Pair device with pairing code" and enter the port and pairing code into LADB.
+4. Run:
 Bash
 pm grant com.example.euroamingguard android.permission.WRITE_SECURE_SETTINGS
+
 Using Termux (with android-tools):
-code
 Bash
 pkg install android-tools
 adb pair localhost:<PAIRING_PORT>
 adb connect localhost:<CONNECT_PORT>
 adb shell pm grant com.example.euroamingguard android.permission.WRITE_SECURE_SETTINGS
+
 Option D: Rooted Devices
 If your device is rooted with Magisk / KernelSU / APatch, open any terminal emulator on the device and run:
-code
+
 Bash
 su -c pm grant com.example.euroamingguard android.permission.WRITE_SECURE_SETTINGS
+
 🚦 Verification
 To verify that the permission has been granted:
-code
+
 Bash
 adb shell dumpsys package com.example.euroamingguard | grep WRITE_SECURE_SETTINGS
 Expected output: android.permission.WRITE_SECURE_SETTINGS: granted=true
+
 📋 Default Pre-configured MCC List
 Country	MCC	Default State	Country	MCC	Default State
 🇦🇹 Austria	232	✅ Allowed	🇮🇹 Italy	222	✅ Allowed
