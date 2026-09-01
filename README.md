@@ -77,8 +77,7 @@ Choose one of the methods below to grant permission:
 1. Enable Developer Options (Settings > About Phone > tap "Build Number" 7 times).
 2. Enable USB Debugging inside Developer Options.
 3. Connect your phone to your computer via USB.
-Run:
-
+- **Run:**
   ```bash
   adb shell pm grant com.example.euroamingguard android.permission.WRITE_SECURE_SETTINGS
 
@@ -86,14 +85,17 @@ Run:
 1. Connect your phone and computer to the same Wi-Fi network.
 2. On your phone, go to Developer Options > Wireless Debugging and turn it ON.
 3. Tap "Pair device with pairing code" to view your IP, port, and 6-digit code.
-4. On your PC terminal, pair the device:
+4. On your PC terminal,
+- **pair the device:**
   ```bash
   adb pair <PHONE_IP>:<PAIRING_PORT>
 "# Enter the 6-digit code when prompted"
 5. Connect to the device:
+- **Run:**
   ```bash
   adb connect <PHONE_IP>:<CONNECT_PORT>
 6. Grant the permission:
+7. - **Run:**
   ```bash
   adb shell pm grant com.example.euroamingguard android.permission.WRITE_SECURE_SETTINGS
 
@@ -103,11 +105,12 @@ Using LADB:
 1. Install LADB from Google Play or GitHub.
 2. Open Wireless Debugging in Settings > Developer Options in split-screen mode alongside LADB.
 3. Tap "Pair device with pairing code" and enter the port and pairing code into LADB.
-4. Run:
+- **Run:**
   ```bash
   pm grant com.example.euroamingguard android.permission.WRITE_SECURE_SETTINGS
 
 Using Termux (with android-tools):
+- **Run:**
   ```bash
   pkg install android-tools
   adb pair localhost:<PAIRING_PORT>
@@ -116,7 +119,7 @@ Using Termux (with android-tools):
 
 #### Option D: Rooted Devices
 If your device is rooted with Magisk / KernelSU / APatch, open any terminal emulator on the device and run:
-
+- **Run:**
   ```bash
   su -c pm grant com.example.euroamingguard android.permission.WRITE_SECURE_SETTINGS
 
@@ -124,7 +127,7 @@ If your device is rooted with Magisk / KernelSU / APatch, open any terminal emul
 
 ##🚦 Verification
 To verify that the permission has been granted:
-
+- **Run:**
   ```bash
   adb shell dumpsys package com.example.euroamingguard | grep WRITE_SECURE_SETTINGS
 
