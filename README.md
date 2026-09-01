@@ -127,6 +127,7 @@ To verify that the permission has been granted:
 
   ```bash
   adb shell dumpsys package com.example.euroamingguard | grep WRITE_SECURE_SETTINGS
+
 Expected output: android.permission.WRITE_SECURE_SETTINGS: granted=true
 
 ---
