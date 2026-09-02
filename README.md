@@ -24,7 +24,6 @@ Under European Union regulations ("Roam Like at Home"), mobile data used within 
 - 🇪🇺 **EU/EEA Defaults**: Pre-configured with all 30 EU & EEA member state Mobile Country Codes (MCC).
 - ✏️ **Editable Whitelist**: Add custom countries/MCCs or toggle existing ones ON/OFF.
 - 🔋 **Battery Efficient**: Uses native Android `TelephonyCallback` / `ServiceStateListener` event triggers instead of battery-draining continuous polling.
-- 🎨 **Modern Material 3 UI**: Real-time status display showing connected carrier name, MCC, and roaming state.
 
 ---
 
