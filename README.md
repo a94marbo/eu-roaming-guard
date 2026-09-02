@@ -1,5 +1,7 @@
 # 🛡️ EU Roaming Guard
 
+Very earlöy in development, just tested it on my own device, an A56. However should work on more OEMs, see below.
+
 An automated Android utility designed to prevent unexpected "bill shock" by instantly managing Mobile Data Roaming based on the connected Mobile Network Operator's country code (MCC).
 
 ---
@@ -26,6 +28,15 @@ Under European Union regulations ("Roam Like at Home"), mobile data used within 
 - 🔋 **Battery Efficient**: Uses native Android `TelephonyCallback` / `ServiceStateListener` event triggers instead of battery-draining continuous polling.
 
 ---
+
+## Manufacturer Support:
+- Samsung (One UI): data_roaming1, data_roaming2, data_roaming_0/1
+- Google Pixel, Motorola, 
+- Sony (Stock Android/AOSP): Settings.Global.DATA_ROAMING, dynamic data_roaming
+- Xiaomi, Redmi, POCO (HyperOS / MIUI): data_roaming_slot1/2, data_roaming_mode
+- OnePlus, OPPO, Realme (OxygenOS / ColorOS): oppo_data_roaming, data_roaming_sub1/2
+- Huawei, Honor (EMUI / MagicOS): hw_data_roaming, hw_data_roaming_sim1/2
+- Dual-SIM & eSIM: Automatically reads and updates all active SIM cards via SubscriptionManager.
 
 ## 📲 Installation & Setup
 1. Transfer and install app-debug.apk on your Android device.
