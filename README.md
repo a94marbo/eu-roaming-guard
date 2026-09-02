@@ -23,7 +23,7 @@ Under European Union regulations ("Roam Like at Home"), mobile data used within 
 ## ✨ Features
 
 - ⚡ **Instant Roaming Toggling**: Switches global data roaming ON/OFF in real time upon cell tower handover.
--     **EU/EEA Defaults**: Pre-configured with all 30 EU & EEA member state Mobile Country Codes (MCC).
+- 🇪🇺  **EU/EEA Defaults**: Pre-configured with all 30 EU & EEA member state Mobile Country Codes (MCC).
 - ✏️ **Editable Whitelist**: Add custom countries/MCCs or toggle existing ones ON/OFF.
 - 🔋 **Battery Efficient**: Uses native Android `TelephonyCallback` / `ServiceStateListener` event triggers instead of battery-draining continuous polling.
 
