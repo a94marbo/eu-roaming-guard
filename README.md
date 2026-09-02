@@ -28,40 +28,6 @@ Under European Union regulations ("Roam Like at Home"), mobile data used within 
 
 ---
 
-## 🛠️ How to Compile
-
-### Method 1: Automatic Build via GitHub Actions (Recommended)
-This repository includes a pre-configured GitHub Actions workflow (`.github/workflows/build.yml`).
-1. Push this repository to GitHub.
-2. Go to the **Actions** tab on your GitHub repository.
-3. Click the latest workflow run and download the **`EURoamingGuard-APK`** artifact.
-
-
-### Method 2: Command Line (Gradle)
-
-**Prerequisites:** JDK 17+ and Android SDK installed.
-
-- **Linux / macOS (Bash):**
-  ```bash
-  chmod +x gradlew
-  ./gradlew assembleDebug
-  
-- **Windows (PowerShell / Command Prompt):**
-  ```bash
-  \gradlew.bat assembleDebug
-  
-The compiled APK will be located at:
-app/build/outputs/apk/debug/app-debug.apk
-
-
-
-### Method 3: Android Studio
-1. Open Android Studio and select Open, then select the project directory.
-2. Let Gradle sync project dependencies.
-3. Go to Build > Build Bundle(s) / APK(s) > Build APK(s).
-
----
-
 ## 📲 Installation & Setup
 1. Transfer and install app-debug.apk on your Android device.
 2. Open the app and grant the runtime permissions (Phone and Location are required by Android to read cell tower MCC codes).
@@ -90,6 +56,7 @@ Choose one of the methods below to grant permission:
   ```bash
   adb pair <PHONE_IP>:<PAIRING_PORT>
 "# Enter the 6-digit code when prompted"
+
 5. Connect to the device:
 - **Run:**
   ```bash
