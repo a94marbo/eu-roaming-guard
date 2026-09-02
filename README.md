@@ -1,6 +1,6 @@
 # 🛡️ EU Roaming Guard
 
-Very earlöy in development, just tested it on my own device, an A56. However should work on more OEMs, see below.
+Very early in development; just tested it on my own device, an A56. However should work on more OEMs; see below.
 
 An automated Android utility designed to prevent unexpected "bill shock" by instantly managing Mobile Data Roaming based on the connected Mobile Network Operator's country code (MCC).
 
@@ -23,7 +23,7 @@ Under European Union regulations ("Roam Like at Home"), mobile data used within 
 ## ✨ Features
 
 - ⚡ **Instant Roaming Toggling**: Switches global data roaming ON/OFF in real time upon cell tower handover.
-- 🇪🇺 **EU/EEA Defaults**: Pre-configured with all 30 EU & EEA member state Mobile Country Codes (MCC).
+-     **EU/EEA Defaults**: Pre-configured with all 30 EU & EEA member state Mobile Country Codes (MCC).
 - ✏️ **Editable Whitelist**: Add custom countries/MCCs or toggle existing ones ON/OFF.
 - 🔋 **Battery Efficient**: Uses native Android `TelephonyCallback` / `ServiceStateListener` event triggers instead of battery-draining continuous polling.
 
@@ -31,7 +31,8 @@ Under European Union regulations ("Roam Like at Home"), mobile data used within 
 
 ## Manufacturer Support:
 - Samsung (One UI): data_roaming1, data_roaming2, data_roaming_0/1
-- Google Pixel, Motorola, 
+- Google Pixel,
+- Motorola, 
 - Sony (Stock Android/AOSP): Settings.Global.DATA_ROAMING, dynamic data_roaming
 - Xiaomi, Redmi, POCO (HyperOS / MIUI): data_roaming_slot1/2, data_roaming_mode
 - OnePlus, OPPO, Realme (OxygenOS / ColorOS): oppo_data_roaming, data_roaming_sub1/2
